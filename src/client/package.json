@@ -1,0 +1,21 @@
+{
+  "name": "boxgameclien",
+  "version": "0.1.0",
+  "description": "Client for boxgame",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc",
+    "http": "lite-server"
+  },
+  "author": "Trym Nilsen",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "babylonjs": "^2.5.0",
+    "systemjs": "^0.20.10",
+    "typescript": "~2.1.5"
+  },
+  "devDependencies": {
+    "lite-server": "^2.3.0"
+  }
+}

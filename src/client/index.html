@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<script src="node_modules/babylonjs/babylon.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('app').then(function() {
+          console.log('Imported');
+      }).catch(function(err){ 
+          console.error(err); 
+        });
+    </script>
+</head>
+<body>
+    <!--<canvas id="guiCanvas"></canvas>-->
+    <canvas id="renderCanvas"></canvas>
+	
+</body>
+</html>
