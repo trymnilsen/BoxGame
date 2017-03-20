@@ -3,14 +3,14 @@ export class Player {
     private spawnPoint: BABYLON.Vector3;
     private scene: BABYLON.Scene;
     private height: number = 2;
-    private speed: number = 1;
-    private inertia: number = 0.9;
+    private speed: number = 8;
+    private inertia: number = 0;
     private angularInertia: number;
     private camera: BABYLON.Camera;
     private controlEnabled: boolean;
     
     constructor(scene: BABYLON.Scene) {
-        this.spawnPoint = new BABYLON.Vector3(0,10,10);
+        this.spawnPoint = new BABYLON.Vector3(0,20,20);
         this.scene = scene;
         this.initPointerLock();
         this.initCamera();
@@ -22,6 +22,7 @@ export class Player {
         cam.ellipsoid = new BABYLON.Vector3(2, this.height, 2);
         cam.checkCollisions = true;
         cam.applyGravity = true;
+        this.scene.gravity = new BABYLON.Vector3(0,-0.5,0);
         // WASD
         cam.keysUp = [87]; // W
         cam.keysDown = [83]; // S
@@ -29,7 +30,7 @@ export class Player {
         cam.keysRight = [68]; // D
         cam.speed = this.speed;
         cam.inertia = this.inertia;
-        cam.angularSensibility = 1000;
+        cam.angularSensibility = 2000;
         cam.layerMask = 2;
         this.camera = cam;
     }

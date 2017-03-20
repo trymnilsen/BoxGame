@@ -11,6 +11,7 @@ class Game
     private player: Player;
     private playerTestLevel: TestLevel;
     private light: BABYLON.Light;
+    private loader: BABYLON.AssetsManager;
 
     constructor(canvasElement: string)
     {
@@ -21,23 +22,31 @@ class Game
         this.scene = new BABYLON.Scene(this.engine);
         this.player = new Player(this.scene);
         this.camera = this.player.getCamera();
+        this.loader =  new BABYLON.AssetsManager(this.scene);
 
-        BABYLON.SceneLoader.Load("assets/","testlevel.babylon",this.engine,()=> {
+        let meshTask = this.loader.addMeshTask("level", "", "./assets/", "testlevel.babylon");
+
+        this.loader.onFinish = (tasks) => {
             //this.scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
             this.scene.collisionsEnabled = true;
 
-            //var cam = this.scene.activeCamera;
-            //cam.applyGravity = true;
-            //cam.ellipsoid = new BABYLON.Vector3(1, 2, 1);
-            //cam.checkCollisions = true;
 
-            this.scene.meshes.forEach(function(mesh) {
-                    mesh.isVisible = false;
+
+            this.scene.meshes.forEach((mesh) => {
+                    mesh.isVisible = true;
+                    mesh.checkCollisions = true;
             });
-        });
-        // Hemispheric light to light the scene
-        var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), this.scene);
-        h.intensity = 0.2;
+            // Hemispheric light to light the scene
+            var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), this.scene);
+            h.intensity = 0.6;
+
+            var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1,-1,0), this.scene);
+            h.intensity = 0.3;
+            this.axis();
+        }
+
+        this.loader.load();
+
     }
     startup(): void {
         this.engine.runRenderLoop(()=> {
@@ -47,6 +56,30 @@ class Game
         window.addEventListener('resize', ()=> {
             this.engine.resize();
         });
+    }
+    private axis(): void{
+        //X axis
+        let x = BABYLON.Mesh.CreateCylinder("x", 5, 0.1, 0.1, 1, 1, this.scene);
+        let xmat = new BABYLON.StandardMaterial("xColor", this.scene);
+        xmat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+        x.material = xmat;
+        x.position = new BABYLON.Vector3(5/2, 0, 0);
+        x.rotation.z = Math.PI / 2;
+
+        //Y axis
+        let y = BABYLON.Mesh.CreateCylinder("y", 5, 0.1, 0.1, 1,1, this.scene);
+        let ymat = new BABYLON.StandardMaterial("yColor", this.scene);
+        ymat.diffuseColor = new BABYLON.Color3(0, 1, 0);
+        y.material = ymat;
+        y.position = new BABYLON.Vector3(0, 5 / 2, 0);
+
+        //Z axis
+        let z = BABYLON.Mesh.CreateCylinder("z", 5, 0.1, 0.1, 1,1, this.scene);
+        let zmat = new BABYLON.StandardMaterial("zColor", this.scene);
+        zmat.diffuseColor = new BABYLON.Color3(0, 0, 1);
+        z.material = zmat;
+        z.position = new BABYLON.Vector3(0, 0, 5/2);
+        z.rotation.x = Math.PI / 2;
     }
 }
 
