@@ -20,9 +20,9 @@ class Game
     }
     createScene(): void {
         this.scene = new BABYLON.Scene(this.engine);
-        this.player = new Player(this.scene);
-        this.camera = this.player.getCamera();
         this.loader =  new BABYLON.AssetsManager(this.scene);
+        this.player = new Player(this.scene,this.loader);
+        this.camera = this.player.getCamera();
 
         let meshTask = this.loader.addMeshTask("level", "", "./assets/", "testlevel.babylon");
 
@@ -38,10 +38,10 @@ class Game
             });
             // Hemispheric light to light the scene
             var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), this.scene);
-            h.intensity = 0.6;
+            h.intensity = 0.8;
 
             var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1,-1,0), this.scene);
-            h.intensity = 0.3;
+            h.intensity = 0.5;
             this.axis();
         }
 

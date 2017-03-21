@@ -8,29 +8,39 @@ export class Player {
     private angularInertia: number;
     private camera: BABYLON.Camera;
     private controlEnabled: boolean;
+    private boxMesh: BABYLON.AbstractMesh;
+    private assetManager: BABYLON.AssetsManager;
     
-    constructor(scene: BABYLON.Scene) {
+    constructor(scene: BABYLON.Scene, assetManager: BABYLON.AssetsManager) {
+        this.assetManager = assetManager;
         this.spawnPoint = new BABYLON.Vector3(0,20,20);
         this.scene = scene;
+
+        this.initPlayerMesh();
         this.initPointerLock();
         this.initCamera();
 
     }
+    private initPlayerMesh(): void {
+        let assetTask = <BABYLON.MeshAssetTask>this.assetManager.addMeshTask("box", "", "./assets/", "box.babylon");
+        assetTask.onSuccess = (task)=> {
+            this.boxMesh = assetTask.loadedMeshes[0];
+            this.boxMesh.scaling = new BABYLON.Vector3(0.1,0.1,0.1);
+            this.boxMesh.position = this.spawnPoint;
+            this.boxMesh.checkCollisions = true;
+        };
+    }
     private initCamera(): void {
-        var cam = new BABYLON.FreeCamera("camera", this.spawnPoint, this.scene);
+        var cam = new BABYLON.ArcRotateCamera("Camera",1,0.8,10,this.spawnPoint.add(new BABYLON.Vector3(0,4,0)),this.scene);
         cam.attachControl(this.scene.getEngine().getRenderingCanvas());
-        cam.ellipsoid = new BABYLON.Vector3(2, this.height, 2);
-        cam.checkCollisions = true;
-        cam.applyGravity = true;
         this.scene.gravity = new BABYLON.Vector3(0,-0.5,0);
         // WASD
-        cam.keysUp = [87]; // W
+/*        cam.keysUp = [87]; // W
         cam.keysDown = [83]; // S
         cam.keysLeft = [65]; // A
         cam.keysRight = [68]; // D
         cam.speed = this.speed;
-        cam.inertia = this.inertia;
-        cam.angularSensibility = 2000;
+        cam.inertia = this.inertia;*/
         cam.layerMask = 2;
         this.camera = cam;
     }
