@@ -1,9 +1,11 @@
 /// <reference path="../node_modules/babylonjs/babylon.d.ts" />
 import { Player } from './player';
 import { TestLevel } from './testlevel';
+import { Keyboard } from './keyboard';
 
 class Game
 {
+    private isLoaded: boolean;
     private canvas: HTMLCanvasElement;
     private engine: BABYLON.Engine;
     private scene: BABYLON.Scene;
@@ -18,7 +20,7 @@ class Game
         this.canvas = <HTMLCanvasElement>document.getElementById(canvasElement);
         this.engine = new BABYLON.Engine(this.canvas,true);
     }
-    createScene(): void {
+    public createScene(): void {
         this.scene = new BABYLON.Scene(this.engine);
         this.loader =  new BABYLON.AssetsManager(this.scene);
         this.player = new Player(this.scene,this.loader);
@@ -42,14 +44,20 @@ class Game
 
             var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1,-1,0), this.scene);
             h.intensity = 0.5;
-            this.axis();
+            this.isLoaded = true;
         }
 
         this.loader.load();
 
     }
-    startup(): void {
+
+    public startup(): void {
+        Keyboard.init();
         this.engine.runRenderLoop(()=> {
+            if(this.isLoaded)
+            {
+                this.update();
+            }
             this.scene.render();
         });
 
@@ -57,29 +65,12 @@ class Game
             this.engine.resize();
         });
     }
-    private axis(): void{
-        //X axis
-        let x = BABYLON.Mesh.CreateCylinder("x", 5, 0.1, 0.1, 1, 1, this.scene);
-        let xmat = new BABYLON.StandardMaterial("xColor", this.scene);
-        xmat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-        x.material = xmat;
-        x.position = new BABYLON.Vector3(5/2, 0, 0);
-        x.rotation.z = Math.PI / 2;
 
-        //Y axis
-        let y = BABYLON.Mesh.CreateCylinder("y", 5, 0.1, 0.1, 1,1, this.scene);
-        let ymat = new BABYLON.StandardMaterial("yColor", this.scene);
-        ymat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-        y.material = ymat;
-        y.position = new BABYLON.Vector3(0, 5 / 2, 0);
-
-        //Z axis
-        let z = BABYLON.Mesh.CreateCylinder("z", 5, 0.1, 0.1, 1,1, this.scene);
-        let zmat = new BABYLON.StandardMaterial("zColor", this.scene);
-        zmat.diffuseColor = new BABYLON.Color3(0, 0, 1);
-        z.material = zmat;
-        z.position = new BABYLON.Vector3(0, 0, 5/2);
-        z.rotation.x = Math.PI / 2;
+    private update(): void {
+        //Delta time is in ms, convert to a seconds
+        let delta = this.scene.getEngine().getDeltaTime() * 0.001;
+        this.player.update(delta);
+        Keyboard.onFrame();
     }
 }
 
