@@ -7,7 +7,7 @@ export class WebSocketHandler {
     }
     public addConnection(socket:WebSocket):void {
         this.connections.push(socket);
-        console.log("Adding connection: ")
+        console.log("Adding connection: ");
         socket.on("error",(cb)=> {
             console.log("Error",JSON.stringify(cb, null, 4));
         });
@@ -16,9 +16,11 @@ export class WebSocketHandler {
         });
         socket.on("message",(data,flags) => {
             console.log("Message",data);
+            socket.send("Recieved: "+data);
         });
         socket.on("open",()=> {
             console.log("OPEN Socket");
+            socket.send("Hello from server");
         });
     }
 }
