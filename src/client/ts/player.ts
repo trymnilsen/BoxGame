@@ -4,7 +4,7 @@ export class Player {
     private spawnPoint: BABYLON.Vector3;
     private scene: BABYLON.Scene;
     private height: number = 2;
-    private speed: number = 8;
+    private speed: number = 20;
     private inertia: number = 0;
     private angularInertia: number;
     private camera: BABYLON.Camera;
@@ -12,7 +12,9 @@ export class Player {
     private boxMesh: BABYLON.AbstractMesh;
     private assetManager: BABYLON.AssetsManager;
     private jumpingVelocity: number = 0;
-    
+    private isInAir: boolean = false;
+    private hasDoubleJumped: boolean = false;
+
     constructor(scene: BABYLON.Scene, assetManager: BABYLON.AssetsManager) {
         this.assetManager = assetManager;
         this.spawnPoint = new BABYLON.Vector3(0,20,20);
@@ -25,23 +27,40 @@ export class Player {
     }
     public update(deltaTime: number) : void {
 
+        this.boxMesh.rotation.y = (<BABYLON.ArcRotateCamera>this.camera).alpha * -1;
+        let forward = new BABYLON.Vector3(Math.sin(this.boxMesh.rotation.y - Math.PI / 2 ), 0, Math.cos(this.boxMesh.rotation.y - Math.PI / 2));
+
         let velocity: BABYLON.Vector3 = BABYLON.Vector3.Zero();
+        let movement: boolean = false;
         if(Keyboard.IsKeyDown(Keyboard.W))
         {
-            velocity.x += this.speed * deltaTime;
+            velocity = forward;
+            movement = true;
         }
         if(Keyboard.IsKeyDown(Keyboard.S))
         {
-            velocity.x -= this.speed * deltaTime;
+            velocity = forward.scale(-1);
+            movement = true;
         }
         if(Keyboard.IsKeyDown(Keyboard.A))
         {
-            velocity.z += this.speed * deltaTime;
+            //Create perpendicular vector
+            velocity = velocity.add(new BABYLON.Vector3(forward.z *-1, 0,forward.x));
+            movement = true;
         }
         if(Keyboard.IsKeyDown(Keyboard.D))
         {
-            velocity.z -= this.speed * deltaTime;
+            let vector = new BABYLON.Vector3(forward.z *-1, 0,forward.x);
+            velocity = velocity.add(vector.scale(-1));
+            movement = true;
         }
+
+        if(movement === true)
+        {
+            velocity = velocity.normalize().scale(this.speed * deltaTime);
+        }
+        
+        
         if(Keyboard.IsKeyDown(Keyboard.Space))
         {
             this.jumpingVelocity = 5;
@@ -57,7 +76,6 @@ export class Player {
         {
             this.jumpingVelocity = 0;
         }
-
 
         velocity = velocity.add(this.scene.gravity);
         velocity.y += this.jumpingVelocity;
@@ -86,10 +104,14 @@ export class Player {
             this.boxMesh.scaling = new BABYLON.Vector3(0.1,0.1,0.1);
             this.boxMesh.position = this.spawnPoint;
             this.boxMesh.checkCollisions = true;
-
+            this.boxMesh.onCollideObservable.add((one,two)=> {
+                console.log("Collision",one,two);
+            },);
+            this.boxMesh
             //this.initPointerLock();
         };
     }
+
     private initCamera(): void {
         var cam = new BABYLON.ArcRotateCamera("Camera",1,0.8,10,this.spawnPoint.
             add(new BABYLON.Vector3(0,4,0)),this.scene);
@@ -132,6 +154,7 @@ export class Player {
                 this.camera.attachControl(canvas);
             }
         };
+        
         document.addEventListener("pointerlockchange", pointerlockchange, false);
         document.addEventListener("mspointerlockchange", pointerlockchange, false);
         document.addEventListener("mozpointerlockchange", pointerlockchange, false);

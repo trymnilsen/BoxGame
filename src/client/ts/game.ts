@@ -37,6 +37,7 @@ class Game
             this.scene.meshes.forEach((mesh) => {
                     mesh.isVisible = true;
                     mesh.checkCollisions = true;
+
             });
             // Hemispheric light to light the scene
             var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), this.scene);
@@ -54,9 +55,13 @@ class Game
     public startup(): void {
         Keyboard.init();
         this.engine.runRenderLoop(()=> {
+            if(window["suspendRunning"] === true) {return;}
             if(this.isLoaded)
             {
-                this.update();
+                //Delta time is in ms, convert to a seconds
+                let delta = this.scene.getEngine().getDeltaTime() * 0.001;
+                this.player.update(delta);
+                Keyboard.onFrame();
             }
             this.scene.render();
         });
@@ -66,12 +71,6 @@ class Game
         });
     }
 
-    private update(): void {
-        //Delta time is in ms, convert to a seconds
-        let delta = this.scene.getEngine().getDeltaTime() * 0.001;
-        this.player.update(delta);
-        Keyboard.onFrame();
-    }
 }
 
 let game = new Game('renderCanvas');

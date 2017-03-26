@@ -1,0 +1,22 @@
+{
+  "name": "boxgame-dummy-player",
+  "version": "1.0.0",
+  "description": "dummy player / AI acting as a client in multiplayer games simplifying implementing mp functionality",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc",
+    "nodemon": "nodemon build/main.js"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "@types/websocket": "0.0.33",
+    "typescript": "^2.2.1",
+    "websocket": "^1.0.24",
+    "ws": "^2.2.2"
+  }
+}
