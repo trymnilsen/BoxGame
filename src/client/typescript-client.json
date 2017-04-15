@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "target": "ES5",
+    "module": "system",
     "moduleResolution": "node",
     "sourceMap": true,
     "noEmitOnError": true,
@@ -9,16 +9,14 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false,
-    "outDir": "build/"
+    "outDir": "public/js/build"
   },
   "exclude": [
     "node_modules",
     ".npm"
   ],
-  "files": [
-      "node_modules/@types/ws/index.d.ts"
-  ],
   "include": [
-        "**/*"
+        "ts/client/**/*",
+        "ts/lib/**/*"
  ]
 }

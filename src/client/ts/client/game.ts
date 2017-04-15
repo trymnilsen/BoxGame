@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/babylonjs/babylon.d.ts" />
+/// <reference path="../../node_modules/babylonjs/babylon.d.ts" />
 import { Player } from './player';
 import { TestLevel } from './testlevel';
 import { Keyboard } from './keyboard';
