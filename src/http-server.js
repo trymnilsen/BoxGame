@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const idGenerator = require("human-readable-ids").hri;
+const gameSession = require("./build/lib/game-session").GameSession;
+const redis = require('ioredis');
+const bluebird = require('bluebird');
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -10,20 +13,56 @@ app.use('/node_modules', express.static('node_modules'))
 
 // index page 
 app.get('/', function(req, res) {
-    res.render('create_game');
+    res.render('create-game');
 });
 
-// about page 
+//Create game
 app.post('/create-game', function(req, res) {
     console.log("Creating game");
-    let id = idGenerator.random();
-    console.log("Created game with ID:"+id);
-    res.redirect("/game/"+id);
+    gameSession.createSession().then((session)=> {
+        console.log("Game created");
+        res.redirect("/game/"+session.Id);
+    });
 });
-app.get('/game/:id',function(req,res){
-    console.log("Requesting game with ID: "+req.params.id);
-    res.sendStatus(200);
+//Redirect any games without id
+app.get('/game/', function(req,res){
+    res.redirect("/");
 });
 
-app.listen(8080);
-console.log('8080 is the magic port');
+app.get('/game/:id',function(req,res){
+    if(!!req.params.id)
+    {
+        let sessionId = req.params.id;
+
+        gameSession.sessionExists(sessionId).then((result) => {
+            if(result)
+            {
+                res.render("game");
+            }
+            else
+            {
+                res.render("game-not-found");
+            }
+        });
+    }
+    else
+    {
+        res.render("game-not-found");
+    }
+});
+
+//Before we listen for the port makes sure our dependcies are met
+
+const ready = function() {
+    console.log('Redis Connected');
+    //Add client reference to gamesession
+    gameSession.redisClient = redisClient;
+    app.listen(8080);
+    console.log('8080 is the magic port');
+};
+const initError = function(err) {
+    console.log("Redis Error: ",err);
+};
+const redisClient = new redis();
+redisClient.on("ready",ready);
+redisClient.on("error",initError);

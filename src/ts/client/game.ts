@@ -26,7 +26,7 @@ class Game
         this.player = new Player(this.scene,this.loader);
         this.camera = this.player.getCamera();
 
-        let meshTask = this.loader.addMeshTask("level", "", "./assets/", "testlevel.babylon");
+        let meshTask = this.loader.addMeshTask("level", "", "/static/assets/", "testlevel.babylon");
 
         this.loader.onFinish = (tasks) => {
             //this.scene.gravity = new BABYLON.Vector3(0, -9.81, 0);

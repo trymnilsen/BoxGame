@@ -97,7 +97,7 @@ export class Player {
     }
     private initPlayerMesh(): void {
         let assetTask = <BABYLON.MeshAssetTask>this.assetManager.
-            addMeshTask("box", "", "./assets/", "box.babylon");
+            addMeshTask("box", "", "/static/assets/", "box.babylon");
 
         assetTask.onSuccess = (task)=> {
             this.boxMesh = assetTask.loadedMeshes[0];
