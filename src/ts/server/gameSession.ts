@@ -1,6 +1,7 @@
 import * as HRI from 'human-readable-ids';
 import * as redis from 'ioredis';
 import * as bluebird from 'bluebird';
+import * as winston from 'winston';
 
 export class GameSession {
 
@@ -20,26 +21,27 @@ export class GameSession {
     }
     public static async createSession(): Promise<GameSession> {
         //return new GameSession(sessionId);
-        console.log("Create session called");
+        winston.debug("GameSession::createSession() Called");
         return new bluebird<GameSession>(async(resolve,reject)=> {
             let validId: string = null;
-            console.log("Test");
+            let attempts: number = 0;
             do {
+                //Generate a new id
                 let id: string = HRI.hri.random();
-                console.log("trying id:",id);
-                let result = await this.redisClient.get(id);
-                console.log("Result from redis:",result);
-                if(result === null)
-                {
-                    validId = id;
-                }
-            } while(false)
-
-            //Add the entry
-            console.log("Adding entry");
-            await this.redisClient.set(validId,"SESS");
-            console.log("resolving promise");
-            resolve(new GameSession(validId));
+                winston.debug("Got HRI:"+id);
+                //Fetch it from redis
+                let exists: boolean = await this.redisClient.exists(id);
+                winston.debug("Id Exists in redis:",!!exists);
+                if(exists == false) { validId = id; }
+                else {attempts++;}
+            } while(validId === null && attempts<100)
+            if(validId === null) {reject();}
+            else {
+                //Add the entry
+                winston.debug("Adding entry to redis");
+                await this.redisClient.set(validId,"SESS");
+                resolve(new GameSession(validId));           
+            }
         });
     }
 
