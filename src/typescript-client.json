@@ -9,14 +9,15 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false,
-    "outDir": "public/js/build"
+    "outDir": "public/js/build",
+    "types": []
   },
   "exclude": [
     "node_modules",
     ".npm"
   ],
   "include": [
-        "ts/client/**/*",
-        "ts/lib/**/*"
+        "ts/client/**/*.ts",
+        "ts/lib/**/*.ts"
  ]
 }
