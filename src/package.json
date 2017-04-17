@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc-client": "tsc -p typescript-client.json",
     "tsc-server": "tsc -p typescript-server.json",
-    "mon": "nodemon http-server.js"
+    "http-mon": "nodemon http-server.js",
+    "ws-mon": "nodemon ws-server.js"
   },
   "author": "Trym Nilsen",
   "license": "UNLICENSED",

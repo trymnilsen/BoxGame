@@ -2,16 +2,64 @@ import * as HRI from 'human-readable-ids';
 import * as redis from 'ioredis';
 import * as bluebird from 'bluebird';
 import * as winston from 'winston';
+import { GameWorld } from './gameworld';
+import { Player } from './game/player';
+import { Commands } from '../lib/network/command/commands';
+import { PCIEncode } from '../lib/network/command/pci.command';
 
 export class GameSession {
 
+    private players : {[id:number] : Player} = {};
+    private numOfCurrentPlayers: number = 0;
+    private gameWorld: GameWorld;
     public static redisClient: redis.Redis;
     public readonly Id: string;
+    
 
-    private constructor(sessionId: string) {
+    public constructor(sessionId: string) {
         this.Id = sessionId;
     }
 
+    public addPlayer(player: Player, clientId: number): void {
+        this.players[clientId] = player;
+        winston.debug("Adding player: "+player.Name+" id: "+clientId);
+        //Send connected player
+        player.send(PCIEncode({p:this.getPlayerList()}));
+        //If this is the first player to connect to the session, give them host responsibility
+        if(this.numOfCurrentPlayers == 1)
+        {
+            player.send(Commands.HRS);
+        }
+    }
+    public removePlayer(clientId: number) {
+        this.players[clientId].disconnect();
+        delete this.players[clientId];
+    }
+
+    public playerCommandReceived(command:string):void {
+
+    }
+    public playerJsonDataReceived(data:Object): void {
+
+    }
+    private broadcast(data:string, source?: number) {
+        for (let key in <any>this.players) {
+            if (this.players.hasOwnProperty(key)) {
+                if(!!source && key === source.toString()) {continue;}
+                let player: Player = this.players[key];
+                player.send(data);
+            }
+        }
+    }
+    private getPlayerList(): {[id:number]: string} {
+        let players = {};
+        for (let key in <any>this.players) {
+            if (this.players.hasOwnProperty(key)) {
+                players[key] = this.players[key].Name;
+            }
+        }
+        return players;
+    }
     public static async sessionExists(id: string): Promise<boolean> {
         return new bluebird<boolean>(async(resolve,reject)=> {
             let exists: boolean = await this.redisClient.exists(id);
@@ -19,10 +67,11 @@ export class GameSession {
             else {resolve(false);}
         });
     }
-    public static async createSession(): Promise<GameSession> {
+
+    public static async createSessionId(): Promise<string> {
         //return new GameSession(sessionId);
         winston.debug("GameSession::createSession() Called");
-        return new bluebird<GameSession>(async(resolve,reject)=> {
+        return new bluebird<string>(async(resolve,reject)=> {
             let validId: string = null;
             let attempts: number = 0;
             do {
@@ -40,7 +89,7 @@ export class GameSession {
                 //Add the entry
                 winston.debug("Adding entry to redis");
                 await this.redisClient.set(validId,"SESS");
-                resolve(new GameSession(validId));           
+                resolve(validId);           
             }
         });
     }

@@ -14,7 +14,7 @@
         {
             "isBuildCommand": true,
             "taskName": "build",
-            "args": ["run","tsc"]
+            "args": ["run","tsc-server"]
         },
         {
             "taskName": "test",

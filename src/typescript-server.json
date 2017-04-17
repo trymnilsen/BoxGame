@@ -9,7 +9,8 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false,
-    "outDir": "build/"
+    "outDir": "build/",
+    "rootDir": "./ts"
   },
   "exclude": [
     "node_modules",
@@ -18,5 +19,5 @@
   "include": [
         "ts/server/**/*",
         "ts/lib/**/*"
- ]
+  ]
 }

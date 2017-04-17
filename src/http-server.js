@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const idGenerator = require("human-readable-ids").hri;
-const gameSession = require("./build/lib/gameSession").GameSession;
+const gameSession = require("./build/server/gameSession").GameSession;
+const redisSession = require("./build/server/redisSession");
 const redis = require('ioredis');
 const bluebird = require('bluebird');
 const winston = require('winston');
@@ -22,9 +23,9 @@ app.get('/', function(req, res) {
 //Create game
 app.post('/create-game', function(req, res) {
     winston.debug("Creating game");
-    gameSession.createSession().then((session)=> {
+    gameSession.createSession().then((id)=> {
         winston.debug("Game created");
-        res.redirect("/game/"+session.Id);
+        res.redirect("/game/"+id);
     });
 });
 //Redirect any games without id
@@ -46,16 +47,11 @@ app.get('/game/:id',function(req,res){
 
 //Before we listen for the port makes sure our dependcies are met
 
-const ready = function() {
-    winston.debug('Redis Connected');
+redisSession.initRedis().then((redisClient)=> {
     //Add client reference to gamesession
     gameSession.redisClient = redisClient;
     app.listen(8080);
     winston.debug('8080 is the magic port');
-};
-const initError = function(err) {
-    winston.debug("Redis Error: ",err);
-};
-const redisClient = new redis();
-redisClient.on("ready",ready);
-redisClient.on("error",initError);
+}).catch((error)=> {
+    winston.error("Redis Init error: error");
+});

@@ -1,5 +1,7 @@
-// import * as redis from 'ioredis';
 // import * as Promise from 'bluebird';
+import * as winston from 'winston';
+import * as Redis from 'ioredis';
+import * as Promise from 'bluebird';
 
 // export class RedisSession {
 //     private redisClient: redis.Redis;
@@ -28,3 +30,15 @@
 //     }
 
 // }
+
+export function initRedis(): Promise<Redis.Redis> {
+    return new Promise<Redis.Redis>((resolve,reject)=> {
+        let redisClient = new Redis();
+        redisClient.on("ready",()=> {
+            resolve(redisClient)
+        });
+        redisClient.on("error",(error)=> {
+            reject(error);
+        });
+    });
+}
