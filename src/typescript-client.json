@@ -10,7 +10,8 @@
     "removeComments": false,
     "noImplicitAny": false,
     "outDir": "public/js/build",
-    "types": []
+    "types": [],
+    "rootDir": "./ts"
   },
   "exclude": [
     "node_modules",

@@ -23,7 +23,7 @@ app.get('/', function(req, res) {
 //Create game
 app.post('/create-game', function(req, res) {
     winston.debug("Creating game");
-    gameSession.createSession().then((id)=> {
+    gameSession.createSessionId().then((id)=> {
         winston.debug("Game created");
         res.redirect("/game/"+id);
     });

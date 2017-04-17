@@ -13,7 +13,7 @@
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
       app: {
-        main: './game.js',
+        main: './client/game.js',
         defaultExtension: 'js'
       }
     }
