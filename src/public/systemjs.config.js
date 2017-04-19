@@ -2,7 +2,8 @@
   System.config({
     paths: {
       // paths serve as alias
-      'npm:': 'node_modules/'
+      'npm:': 'node_modules/',
+      'lodash': 'node_modules/lodash'
     },
     // map tells the System loader where to look for things
     map: {

@@ -10,7 +10,7 @@
     "removeComments": false,
     "noImplicitAny": false,
     "outDir": "public/js/build",
-    "types": [],
+    "types": ["lodash"],
     "rootDir": "./ts"
   },
   "exclude": [

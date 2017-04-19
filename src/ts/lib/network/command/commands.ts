@@ -1,3 +1,4 @@
+import { CONDecode } from './con.command';
 import { CONCommand, 
     PPUCommand, 
     HCWCommand, 
@@ -26,6 +27,11 @@ export class Commands {
         return {
             "t":type,
             "d":data
+        }
+    }
+    public static getDecoders(): {[id:string] : (data: string | Object) => Object} {
+        return {
+            "CON" : CONDecode
         }
     }
 }

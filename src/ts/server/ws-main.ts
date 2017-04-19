@@ -6,6 +6,7 @@ import { GameServer } from './game-server';
 import { WsUtil } from './util/ws-util';
 import { GameSession } from './gameSession';
 import { initRedis } from './redisSession';
+import { URLUtil } from '../lib/util/urlUtil';
 
 export function init():void {
     
@@ -15,7 +16,7 @@ export function init():void {
 
     let veryClientTest = (info, cb) => {
         let url: string = info.req.url;
-        let sessionId: string = url.replace('/','');
+        let sessionId: string = URLUtil.GetIdFromPath(url);
         GameSession.sessionExists(sessionId).then((valid:boolean)=> {
             if(valid == true) {cb(true);}
             else {
