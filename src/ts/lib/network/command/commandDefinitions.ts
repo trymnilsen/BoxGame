@@ -33,16 +33,16 @@ export interface Orientation {
  * Connected command
  * 
  * @export
- * @interface CONCommand
+ * @interface CCICommand
  */
-export interface CONCommand {
+export interface CCICommand {
     /**
      * The connection id assigned to the client
      * 
-     * The CON - connection id is sent from the server to the client on connect
+     * The CCI - connection id is sent from the server to the client on connect
      * 
      * @type {number}
-     * @memberOf CONCommand
+     * @memberOf CCICommand
      */
     c: number;
 }

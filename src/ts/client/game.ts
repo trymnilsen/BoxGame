@@ -2,7 +2,7 @@ import { URLUtil } from '../lib/util/urlUtil';
 import { HumanIdGenerator } from '../lib/util/humanIdGenerator';
 import { config } from './config';
 import { Commands } from '../lib/network/command/commands';
-import { CONCommand, PPUCommand } from '../lib/network/command/commandDefinitions';
+import { CCICommand, PPUCommand } from '../lib/network/command/commandDefinitions';
 import * as _ from "lodash";
 import { World } from './world';
 import { GameWorld } from '../server/gameworld';
@@ -66,7 +66,7 @@ export class Game {
     private routeCommand(command: Object, type:string) {
         switch(type){
             case Commands.CON:
-                this.socketConnected(<CONCommand>command);
+                this.socketConnected(<CCICommand>command);
                 break;
             case Commands.PCI:
                 _.forOwn(command["p"],(value,key)=> {
@@ -114,7 +114,7 @@ export class Game {
             this.routeCommand(command,type);
         }
     }
-    private socketConnected(con: CONCommand) {
+    private socketConnected(con: CCICommand) {
         this.clientId = con.c+"";
         console.log("ClientID assigned:",this.clientId);
     }
