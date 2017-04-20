@@ -46,7 +46,6 @@ export interface CONCommand {
      */
     c: number;
 }
-
 /**
  * The current positon and heading of a player
  * 
@@ -57,7 +56,13 @@ export interface CONCommand {
  * @extends {Orientation}
  */
 export interface PPUCommand extends Orientation {
-
+    /**
+     * Client id
+     * 
+     * @type {number}
+     * @memberOf PPUCommand
+     */
+    c: string;
 }
 
 /**
