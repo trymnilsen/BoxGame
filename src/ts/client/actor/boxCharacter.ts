@@ -5,4 +5,7 @@ export class BoxCharacter {
     public getHeading():number {
         return 0;
     }
+    public loadMesh(): void {
+        
+    }
 }

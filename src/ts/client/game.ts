@@ -1,33 +1,79 @@
-import { URLUtil } from '../lib/util/urlUtil';
-import { HumanIdGenerator } from '../lib/util/humanIdGenerator';
-import { config } from './config';
-import { Commands } from '../lib/network/command/commands';
+import * as _ from 'lodash';
 import { CCICommand, PPUCommand } from '../lib/network/command/commandDefinitions';
-import * as _ from "lodash";
-import { World } from './world';
+import { Commands } from '../lib/network/command/commands';
+import { config } from './config';
 import { GameWorld } from '../server/gameworld';
+import { HumanIdGenerator } from '../lib/util/humanIdGenerator';
+import { Keyboard } from './keyboard';
 import { PPUEncode } from '../lib/network/command/ppu.command';
+import { URLUtil } from '../lib/util/urlUtil';
+import { World } from './world';
 
 enum GameState {
-    Connecting,
-    Joining,
-    Playing
+    Initing = 0,
+    Loaded = 1,
+    Connecting = 2,
+    Joining = 3,
+    Playing = 4
 }
 
 export class Game {
-    private state: GameState;
+    private state: GameState = GameState.Initing;
     private socket: WebSocket;
     private tickTimerId: NodeJS.Timer;
     private clientId: string;
     private gameworld: World;
+    private webglCanvas: HTMLCanvasElement;
+
+    private activeCamera: BABYLON.Camera;
+    private engine: BABYLON.Engine;
+    private playScene: BABYLON.Scene;
+    private assetManager: BABYLON.AssetsManager;
     private commandDecoder: {[id:string] : (data: string | Object) => Object} = {};
-    public constructor()
+
+    public constructor(canvasId: string)
     {
+        //Creat the world
+        this.webglCanvas = <HTMLCanvasElement>document.getElementById(canvasId);
+        this.engine = new BABYLON.Engine(this.webglCanvas);
+        this.playScene = new BABYLON.Scene(this.engine);
+        this.assetManager = new BABYLON.AssetsManager(this.playScene);
+        this.gameworld = new World(this.assetManager,this.playScene);
+        this.assetManager.onFinish = this.assetsLoaded;
+        this.gameworld.addLoadTasks();
+        this.assetManager.load();
+        
+        Keyboard.init();
+
+        this.engine.runRenderLoop(()=> {
+            //Simple way to suspend updating
+            if(window["suspendRunning"] === true) {return;}
+            //If we are loaded start rendering
+            if(this.state >= GameState.Loaded)
+            {
+                //Delta time is in ms, convert to a seconds
+                let delta = this.playScene.getEngine().getDeltaTime() * 0.001;
+                this.gameworld.update(delta);
+                Keyboard.onFrame();
+            }
+            this.playScene.render();
+        });
+
+        window.addEventListener('resize', ()=> {
+            this.engine.resize();
+        });
+    }
+
+    public socketSend(message: string): void {
+
+    }
+    private assetsLoaded(tasks: BABYLON.IAssetTask[]) {
+
+    }
+    private initGameSession(): void {
         //Get the game id
         let gameId = this.getGameId();
         let url = `ws://${config["ws-server"]}:${config["ws-server-port"]}/${gameId}`;
-        //Creat the world
-        this.gameworld = new World();
         //Set up the socket
         this.socket = new WebSocket(url);
         this.socket.onopen = this.socketOpen;
@@ -38,9 +84,6 @@ export class Game {
         //Set up timer
         this.tickTimerId = setInterval(this.networkTick,200);
         this.state = GameState.Playing;
-    }
-
-    public socketSend(message: string): void {
 
     }
     private networkTick(): void {
@@ -65,7 +108,7 @@ export class Game {
     }
     private routeCommand(command: Object, type:string) {
         switch(type){
-            case Commands.CON:
+            case Commands.CCI:
                 this.socketConnected(<CCICommand>command);
                 break;
             case Commands.PCI:
@@ -117,6 +160,9 @@ export class Game {
     private socketConnected(con: CCICommand) {
         this.clientId = con.c+"";
         console.log("ClientID assigned:",this.clientId);
+    }
+    private assetLoadError(err): void {
+
     }
     private socketError(err): void {
         //Handle errors differently if we are connected or not
