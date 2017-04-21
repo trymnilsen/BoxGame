@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/babylonjs/babylon.d.ts" />
 import * as _ from 'lodash';
 import { CCICommand, PPUCommand } from '../lib/network/command/commandDefinitions';
 import { Commands } from '../lib/network/command/commands';
@@ -44,6 +45,29 @@ export class Game {
         this.assetManager.load();
         
         Keyboard.init();
+    }
+
+    public socketSend(message: string): void {
+
+    }
+    private assetsLoaded(tasks: BABYLON.IAssetTask[]) {
+        this.gameworld.assetsFinishedLoading();
+        this.initGameSession();
+    }
+    private initGameSession(): void {
+        //Get the game id
+        let gameId = this.getGameId();
+        let url = `ws://${config["ws-server"]}:${config["ws-server-port"]}/${gameId}`;
+        //Set up the socket
+        this.socket = new WebSocket(url);
+        this.socket.onopen = this.socketOpen;
+        this.socket.onmessage = this.socketDataReceived;
+        this.socket.onerror = this.socketError;
+        //Get any special decoders
+        this.commandDecoder = Commands.getDecoders();
+        //Set up timer
+        this.tickTimerId = setInterval(this.networkTick,200);
+        this.state = GameState.Playing;
 
         this.engine.runRenderLoop(()=> {
             //Simple way to suspend updating
@@ -62,28 +86,6 @@ export class Game {
         window.addEventListener('resize', ()=> {
             this.engine.resize();
         });
-    }
-
-    public socketSend(message: string): void {
-
-    }
-    private assetsLoaded(tasks: BABYLON.IAssetTask[]) {
-
-    }
-    private initGameSession(): void {
-        //Get the game id
-        let gameId = this.getGameId();
-        let url = `ws://${config["ws-server"]}:${config["ws-server-port"]}/${gameId}`;
-        //Set up the socket
-        this.socket = new WebSocket(url);
-        this.socket.onopen = this.socketOpen;
-        this.socket.onmessage = this.socketDataReceived;
-        this.socket.onerror = this.socketError;
-        //Get any special decoders
-        this.commandDecoder = Commands.getDecoders();
-        //Set up timer
-        this.tickTimerId = setInterval(this.networkTick,200);
-        this.state = GameState.Playing;
 
     }
     private networkTick(): void {
