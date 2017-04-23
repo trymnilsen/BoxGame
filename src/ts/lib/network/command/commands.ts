@@ -1,5 +1,6 @@
-import { CONDecode } from './con.command';
-import { CONCommand, 
+import { CCIDecode } from './cci.command';
+import { PPUDecode } from './ppu.command';
+import { CCICommand, 
     PPUCommand, 
     HCWCommand, 
     PJICommand, 
@@ -10,7 +11,7 @@ import { CONCommand,
     PDICommand, 
     PKICommand } from './commandDefinitions';
 export class Commands {
-    public static readonly CON = "CON";
+    public static readonly CCI = "CCI";
     public static readonly PPU = "PPU";
     public static readonly HRS = "HRS";
     public static readonly HCW = "HCW";
@@ -29,9 +30,13 @@ export class Commands {
             "d":data
         }
     }
+    public static ObjectToJson(type: string, data: Object): string {
+        return JSON.stringify(Commands.WrapCommand(data,type));
+    }
     public static getDecoders(): {[id:string] : (data: string | Object) => Object} {
         return {
-            "CON" : CONDecode
+            "CCI" : CCIDecode,
+            "PPU" : PPUDecode
         }
     }
 }

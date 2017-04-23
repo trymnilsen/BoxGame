@@ -1,9 +1,9 @@
-import { CONCommand } from './commandDefinitions';
+import { CCICommand } from './commandDefinitions';
 import { Commands } from './commands';
-export function CONEncode(players: CONCommand) :string {
-    return JSON.stringify(Commands.WrapCommand(players,Commands.CON));
+export function CCIEncode(players: CCICommand) :string {
+    return JSON.stringify(Commands.WrapCommand(players,Commands.CCI));
 }
-export function CONDecode(data): CONCommand {
+export function CCIDecode(data): CCICommand {
     return {
         c: data.substr(4)
     }

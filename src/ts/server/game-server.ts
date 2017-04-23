@@ -2,6 +2,7 @@ import * as WebSocket from 'ws';
 import * as winston from 'winston';
 import { GameSession } from './gameSession';
 import { Player } from './game/player';
+import { Commands } from '../lib/network/command/commands';
 
 export class GameServer {
     private server: WebSocket.Server;
@@ -17,7 +18,7 @@ export class GameServer {
         this.clientSessionMap[id] = gameId;
         //Add player to session
         //Send client id
-        socket.send("!CON"+id);
+        socket.send("!"+Commands.CCI+id);
         winston.debug("Adding connection: ", id);
         //Bind events for socket
         socket.on("error",(cb)=> {
@@ -40,7 +41,7 @@ export class GameServer {
         this.sessions[gameId].addPlayer(player,id);
     }
 
-    private messageReceived(data: string, clientId:number, gameId: string):void {
+    private messageReceived(data:string, clientId:number, gameId: string):void {
         let session = this.sessions[gameId];
         //If the first character is an exclamation mark, assume a command
         if(data[0] === '!') {
@@ -54,8 +55,11 @@ export class GameServer {
                 winston.warn("Failed parsing message");
             }
         } 
-        //Command was neither log it and ignore
-        winston.debug("Receiver data nether command nor json: "+data);
+        else
+        {
+            //Command was neither log it and ignore
+            winston.debug("Receiver data nether command nor json: "+data);
+        }
     }
 
     private removeClient(clientId:number):void {

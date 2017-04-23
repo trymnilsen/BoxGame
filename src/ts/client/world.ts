@@ -9,12 +9,16 @@ export class World {
     private scene: BABYLON.Scene;
     private assetManager: BABYLON.AssetsManager;
     private assetCache: AssetCache;
+    private cameraOffset: BABYLON.Vector3;
+    public camera: BABYLON.ArcRotateCamera;
+
     public player: Player;
     public opponents: { [id: string]: Opponent } = {};
 
     public constructor(assetManager: BABYLON.AssetsManager, scene: BABYLON.Scene) {
         this.assetCache = new AssetCache();
         this.scene = scene;
+        this.assetManager = assetManager;
     }
     public addLoadTasks(): void {
         //Load the test level
@@ -22,8 +26,10 @@ export class World {
         //Load the box model
         let boxTask = this.assetManager.addMeshTask(BoxCharacter.boxMeshId, "", "/static/assets/", "box.babylon");
         testLeveltask.onSuccess = (task) => {
-            let levelMesh = (<BABYLON.MeshAssetTask>task).loadedMeshes[0];
-            levelMesh.checkCollisions = true;
+            (<BABYLON.MeshAssetTask>task).loadedMeshes.forEach((mesh) => {
+                    mesh.isVisible = true;
+                    mesh.checkCollisions = true;
+            });
         };
         boxTask.onSuccess = (task) => {
             let boxMesh = (<BABYLON.MeshAssetTask>task).loadedMeshes[0];
@@ -42,6 +48,7 @@ export class World {
         let opponentMesh = this.assetCache.GetMesh(BoxCharacter.boxMeshId);
         let opponent = new Opponent(opponentMesh);
         this.opponents[clientId] = opponent;
+        console.log("Opponent Added: ",clientId,name);
     }
     public updateOpponent(ppu: PPUCommand) {
         let clientId = ppu.c;
@@ -62,13 +69,31 @@ export class World {
 
         //Create the player
         this.player = new Player(this.assetCache.GetMesh(BoxCharacter.boxMeshId));
-        
+
+        //Create the camera
+        var cam = new BABYLON.ArcRotateCamera("Camera",1,0.8,10,new BABYLON.Vector3(0,20,20),this.scene);
+        cam.attachControl(this.scene.getEngine().getRenderingCanvas());
+        this.scene.gravity = new BABYLON.Vector3(0,-0.5,0);
+        // WASD
+/*        cam.keysUp = [87]; // W
+        cam.keysDown = [83]; // S
+        cam.keysLeft = [65]; // A
+        cam.keysRight = [68]; // D
+        cam.speed = this.speed;
+        cam.inertia = this.inertia;*/
+        cam.layerMask = 2;
+        this.camera = cam;
+        this.cameraOffset = new BABYLON.Vector3(0,4,0);
     }
     public update(deltaTime: number) {
-        _.forOwn(this.opponents, (value, key) => {
-            value.update(deltaTime);
-        });
+        for (var key in this.opponents) {
+            // skip loop if the property is from prototype
+            if (!this.opponents.hasOwnProperty(key)) continue;
+            this.opponents[key].update(deltaTime);
+        }
 
         this.player.update(deltaTime);
+        this.player.heading = this.camera.alpha * -1;
+        this.camera.target = this.player.position.add(this.cameraOffset);
     }
 }

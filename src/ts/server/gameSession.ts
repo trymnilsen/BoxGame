@@ -12,12 +12,15 @@ export class GameSession {
     private players : {[id:number] : Player} = {};
     private numOfCurrentPlayers: number = 0;
     private gameWorld: GameWorld;
+    private commandDecoder: {[id:string] : (data: string | Object) => Object} = {};
+
     public static redisClient: redis.Redis;
     public readonly Id: string;
     
 
     public constructor(sessionId: string) {
         this.Id = sessionId;
+        this.commandDecoder = Commands.getDecoders();
     }
 
     public addPlayer(player: Player, clientId: number): void {
@@ -30,14 +33,31 @@ export class GameSession {
         {
             player.send(Commands.HRS);
         }
+        //Send player joined command
+        this.broadcast(Commands.ObjectToJson(Commands.PJI, {
+            n: player.Name,
+            i: player.ClientId
+        }), player.ClientId);
     }
     public removePlayer(clientId: number) {
         this.players[clientId].disconnect();
         delete this.players[clientId];
     }
 
-    public playerCommandReceived(command:string):void {
+    public playerCommandReceived(data:string):void {
+        //console.log('Player Command Received:'+data);
 
+        let command = null;
+        let type = data.substring(1,4);
+        let decoder = this.commandDecoder[type];
+        if(!!decoder) {command = decoder(data);}
+
+        switch(type){
+            case Commands.PPU:
+                this.broadcast(data, command.c);
+            default:
+                break;
+        }
     }
     public playerJsonDataReceived(data:Object): void {
 
@@ -45,7 +65,7 @@ export class GameSession {
     private broadcast(data:string, source?: number) {
         for (let key in <any>this.players) {
             if (this.players.hasOwnProperty(key)) {
-                if(!!source && key === source.toString()) {continue;}
+                if((source !== undefined) && key === source.toString()) {continue;}
                 let player: Player = this.players[key];
                 player.send(data);
             }

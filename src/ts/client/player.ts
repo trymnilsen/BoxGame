@@ -169,20 +169,7 @@ export class Player {
     }
 
     private initCamera(): void {
-        var cam = new BABYLON.ArcRotateCamera("Camera",1,0.8,10,this.spawnPoint.
-            add(new BABYLON.Vector3(0,4,0)),this.scene);
 
-        cam.attachControl(this.scene.getEngine().getRenderingCanvas());
-        this.scene.gravity = new BABYLON.Vector3(0,-0.5,0);
-        // WASD
-/*        cam.keysUp = [87]; // W
-        cam.keysDown = [83]; // S
-        cam.keysLeft = [65]; // A
-        cam.keysRight = [68]; // D
-        cam.speed = this.speed;
-        cam.inertia = this.inertia;*/
-        cam.layerMask = 2;
-        this.camera = cam;
     }
     private initPointerLock(): void {
         // Request pointer lock

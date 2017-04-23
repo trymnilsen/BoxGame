@@ -5,4 +5,4 @@ enum SocketReadyState {
     CLOSED = 3
 }
 
-export {SocketReadyState}:
+export {SocketReadyState};

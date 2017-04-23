@@ -108,7 +108,7 @@ export interface PJICommand extends PLICommand{
  */
 export interface PLICommand {
     /**
-     * Client id of the player joining
+     * Client id of the player leaving
      * 
      * @type {number}
      * @memberOf PLICommand

@@ -12,6 +12,7 @@ winston.level = 'debug';
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use('/static', express.static('public'))
+app.use('/ts',express.static('ts'));
 app.use('/node_modules', express.static('node_modules'))
 // use res.render to load up an ejs view file
 

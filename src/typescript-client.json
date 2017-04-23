@@ -3,12 +3,6 @@
     "target": "ES5",
     "module": "system",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "noEmitOnError": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "removeComments": false,
-    "noImplicitAny": false,
     "outDir": "public/js/build",
     "types": ["lodash"],
     "rootDir": "./ts"
