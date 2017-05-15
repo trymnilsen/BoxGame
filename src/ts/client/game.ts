@@ -97,7 +97,7 @@ export class Game {
     }
     private networkTick(): void {
         if(this.socket.readyState==1 && this.state == GameState.Playing) {
-            let pos = this.gameworld.player.position;
+            let pos = this.gameworld.player.boxPos;
             let hdg = this.gameworld.player.heading;
 
             let ppu: PPUCommand = {

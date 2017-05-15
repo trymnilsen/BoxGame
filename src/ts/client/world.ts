@@ -99,6 +99,6 @@ export class World {
 
         this.player.update(deltaTime);
         this.player.heading = this.camera.alpha * -1;
-        this.camera.target = this.player.position.add(this.cameraOffset);
+        this.camera.target = this.player.boxPos.add(this.cameraOffset);
     }
 }

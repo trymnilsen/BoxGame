@@ -12,7 +12,7 @@ export class Opponent extends BoxCharacter {
         mesh.position = new BABYLON.Vector3(x,20,z);
         this.target = null;
         this.lastTarget = null;
-    }
+    }E
     public updatePositionAndOrientation(x:number,y:number,z:number,heading:number) {
         this.lastTarget = this.target;
         let position = new BABYLON.Vector3(x,y,z);
@@ -27,14 +27,5 @@ export class Opponent extends BoxCharacter {
             if(t>1){t = 1;}
             this.boxMesh.position = BABYLON.Vector3.Lerp(this.lastTarget,this.target,t);
         }
-        // if(this.target!=null){
-            
-        //     let velocity = this.target.subtract(this.boxMesh.position);
-        //     if(velocity.lengthSquared()>this.speed * this.speed) {
-        //         velocity = velocity.normalize().scale(this.speed);
-        //     }
-        //     this.boxMesh.moveWithCollisions(velocity.scale(deltaTime));
-
-        // }
     }
 }

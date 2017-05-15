@@ -10,6 +10,7 @@ export class Keyboard {
     public static A = 65;
     public static S = 83;
     public static D = 68;
+    public static X = 88;
     public static Space = 32;
     /**
      * Map keeping track of keydown up events
