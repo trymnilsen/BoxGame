@@ -42,6 +42,10 @@ export class GameSession {
     public removePlayer(clientId: number) {
         this.players[clientId].disconnect();
         delete this.players[clientId];
+        //Send a notification to others that this user disconnected
+        this.broadcast(Commands.ObjectToJson(Commands.PLI, {
+            c: clientId
+        }))
     }
 
     public playerCommandReceived(data:string):void {

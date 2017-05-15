@@ -57,6 +57,11 @@ export class World {
             opponent.updatePositionAndOrientation(ppu.x, ppu.y, ppu.z, ppu.h);
         }
     }
+    public removeOpponent(clientId: string) {
+        this.opponents[clientId].destroy();
+        delete this.opponents[clientId];
+        console.log("Removed client: "+clientId);
+    }
     public assetsFinishedLoading(): void {
         this.scene.collisionsEnabled = true;
         //this.scene.gravity = new BABYLON.Vector3(0, -9.81, 0);

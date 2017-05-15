@@ -9,4 +9,7 @@ export class BoxCharacter {
     public loadMesh(): void {
         
     }
+    public destroy(): void {
+        this.boxMesh.dispose();
+    }
 }

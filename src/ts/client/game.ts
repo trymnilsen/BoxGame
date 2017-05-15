@@ -134,6 +134,9 @@ export class Game {
             case Commands.PJI:
                 this.gameworld.addOpponent(command["i"],command["n"]);
                 break;
+            case Commands.PLI:
+                this.gameworld.removeOpponent(command["c"]);
+                break;
             default: 
                 console.warn("No Match for type:",type);
         }
