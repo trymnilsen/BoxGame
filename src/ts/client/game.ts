@@ -90,6 +90,7 @@ export class Game {
             this.playScene.render();
         });
 
+
         window.addEventListener('resize', ()=> {
             this.engine.resize();
         });

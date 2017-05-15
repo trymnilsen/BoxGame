@@ -19,6 +19,7 @@ export class World {
         this.assetCache = new AssetCache();
         this.scene = scene;
         this.assetManager = assetManager;
+        this.cameraOffset = new BABYLON.Vector3(0,4,0);
     }
     public addLoadTasks(): void {
         //Load the test level
@@ -72,9 +73,11 @@ export class World {
         var h = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1, -1, 0), this.scene);
         h.intensity = 0.5;
 
+        let playerMesh = this.assetCache.GetMesh(BoxCharacter.boxMeshId);
         //Create the player
-        this.player = new Player(this.assetCache.GetMesh(BoxCharacter.boxMeshId));
 
+        this.player = new Player(playerMesh);
+        
         //Create the camera
         var cam = new BABYLON.ArcRotateCamera("Camera",1,0.8,10,new BABYLON.Vector3(0,20,20),this.scene);
         cam.attachControl(this.scene.getEngine().getRenderingCanvas());
@@ -88,7 +91,6 @@ export class World {
         cam.inertia = this.inertia;*/
         cam.layerMask = 2;
         this.camera = cam;
-        this.cameraOffset = new BABYLON.Vector3(0,4,0);
     }
     public update(deltaTime: number) {
         for (var key in this.opponents) {
@@ -96,9 +98,8 @@ export class World {
             if (!this.opponents.hasOwnProperty(key)) continue;
             this.opponents[key].update(deltaTime);
         }
-
         this.player.update(deltaTime);
-        this.player.heading = this.camera.alpha * -1;
         this.camera.target = this.player.boxPos.add(this.cameraOffset);
+        this.player.heading = this.camera.alpha * -1;
     }
 }

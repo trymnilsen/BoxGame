@@ -1,7 +1,7 @@
 export class BoxCharacter {
     public static boxMeshId: string = "Box";
     protected boxMesh : BABYLON.AbstractMesh;
-    protected speed: number = 20;
+    protected speed: number = 40;
     public constructor(mesh: BABYLON.AbstractMesh) {
         this.boxMesh = mesh;
     }
