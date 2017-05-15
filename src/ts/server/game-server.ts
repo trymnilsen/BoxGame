@@ -47,7 +47,7 @@ export class GameServer {
         if(data[0] === '!') {
             session.playerCommandReceived(data);
         } else if(data[0] === '{' || data[0] === '[') { 
-            //if the test start with a bracket or array assume its json
+            //if the text start with a bracket or array assume its json
             try{
                 let jsonData = JSON.parse(data);
                 session.playerJsonDataReceived(jsonData);

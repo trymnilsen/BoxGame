@@ -47,7 +47,6 @@ app.get('/game/:id',function(req,res){
 });
 
 //Before we listen for the port makes sure our dependcies are met
-
 redisSession.initRedis().then((redisClient)=> {
     //Add client reference to gamesession
     gameSession.redisClient = redisClient;
