@@ -6,6 +6,9 @@ npm-debug.log*
 #build
 build
 
+# Redis dump data
+dump.rdb
+
 # Runtime data
 pids
 *.pid
