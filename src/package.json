@@ -9,7 +9,8 @@
     "tsc-server": "tsc -p typescript-server.json",
     "tsc": "tsc -p typescript-client.json && tsc -p typescript-server.json",
     "http-mon": "nodemon http-server.js",
-    "ws-mon": "nodemon ws-server.js"
+    "ws-mon": "nodemon ws-server.js",
+    "start": "concurrently -k -p \"[{name}]\" -n \"HTTP,WS,REDIS\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"npm run http-mon\" \"npm run ws-mon\" \"redis-server\""
   },
   "author": "Trym Nilsen",
   "license": "UNLICENSED",
@@ -21,6 +22,7 @@
     "@types/ws": "0.0.39",
     "babylonjs": "^2.5.0",
     "bluebird": "^3.5.0",
+    "concurrently": "^3.4.0",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
     "human-readable-ids": "^1.0.1",
