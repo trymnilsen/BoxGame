@@ -30,6 +30,7 @@ export class World {
             (<BABYLON.MeshAssetTask>task).loadedMeshes.forEach((mesh) => {
                     mesh.isVisible = true;
                     mesh.checkCollisions = true;
+                    mesh.isPickable = true;
             });
         };
         boxTask.onSuccess = (task) => {

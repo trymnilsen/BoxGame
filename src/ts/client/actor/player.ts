@@ -27,6 +27,19 @@ export class Player extends BoxCharacter {
         //     testvelocity = new BABYLON.Vector3(this.botplayer.velocity.x,this.botplayer.velocity.y,this.botplayer.velocity.z);
         // //     this.heading = this.botplayer.heading;
         // } //else {
+
+        let rayPick = new BABYLON.Ray(this.boxMesh.position, new BABYLON.Vector3(0, -1, 0));
+		let meshFound = this.boxMesh.getScene().pickWithRay(rayPick, (item) => {
+			return item != this.boxMesh;
+		});
+        
+        let distanceToGround = 0;
+		if(meshFound.pickedPoint) {
+			let rayToGround = meshFound.pickedPoint.subtract(this.boxMesh.position);
+			distanceToGround = rayToGround.length();
+		}
+
+        //console.log("Distance to ground: "+distanceToGround);
         let acceleration: BABYLON.Vector3 = BABYLON.Vector3.Zero();
         let forward = new BABYLON.Vector3(Math.sin(this.boxMesh.rotation.y - Math.PI / 2), 0, Math.cos(this.boxMesh.rotation.y - Math.PI / 2));
         if (Keyboard.IsKeyDown(Keyboard.W)) {
@@ -47,7 +60,7 @@ export class Player extends BoxCharacter {
 
 
         if (Keyboard.IsKeyDown(Keyboard.Space)) {
-            this.verticalVelocity = 5;
+            this.verticalVelocity = 20;
             console.log("JUMP!");
         }
 
@@ -69,15 +82,18 @@ export class Player extends BoxCharacter {
 
         // testvelocity = testvelocity.scale(deltaTime);
         // testvelocity.y -= 0.8;
-        acceleration.y -= 1.8;
+        if(distanceToGround>this.boxMesh.ellipsoid.y * 2 + 0.1) {//0.01 is a rounding threshold
+            acceleration.y -= 5;
+        }
+
         acceleration.y += this.verticalVelocity;
         acceleration = acceleration.scale(deltaTime);
         this.velocity = this.velocity.add(acceleration);
         this.velocity = this.velocity.add(this.velocity.scale(-0.1));
 
-        if (this.velocity.lengthSquared() > this.speed * this.speed) {
-            this.velocity = this.velocity.normalize().scale(this.speed);
-        }
+        // if (this.velocity.lengthSquared() > this.speed * this.speed) {
+        //     this.velocity = this.velocity.normalize().scale(this.speed);
+        // }
         if (window["velLogging"] === true) {
             console.log("Velocity", this.velocity);
             console.log("Position", this.boxMesh.absolutePosition);
